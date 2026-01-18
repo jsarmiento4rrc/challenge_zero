@@ -1,7 +1,12 @@
+# Name: Jeffrey Sarmiento
 require 'net/http'
 require 'json'
+require 'openssl'
 
-# Fetching the full dataset (306,000 trees)
+# SSL Fix for macOS
+OpenSSL::SSL::VERIFY_PEER = OpenSSL::SSL::VERIFY_NONE
+
+# Full tree dataset URL
 url = 'https://data.winnipeg.ca/resource/d3jk-hb6j.json?$limit=306000'
 uri = URI(url)
 response = Net::HTTP.get(uri)
@@ -10,10 +15,10 @@ trees = JSON.parse(response)
 ash_count = 0
 
 trees.each do |tree|
-  # Check if the common name includes the word "ash"
+  # We check if 'common_name' exists and contains 'ash' (case-insensitive)
   if tree['common_name'] && tree['common_name'].downcase.include?('ash')
     ash_count += 1
   end
 end
 
-puts "Total number of Ash trees in Winnipeg: #{ash_count}"
+puts "Total number of Ash trees found in Winnipeg: #{ash_count}"
